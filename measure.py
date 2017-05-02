@@ -106,7 +106,7 @@ def one_config(args, row, config):
 
     #Run the benchmark on this config and capture result
     t0 = time.time()
-    subprocess.check_output([args.test,args.iipReqs,args.ip])
+    subprocess.check_output([args.test,args.iipReqs])
     t1 = time.time()
     tiles = int(subprocess.check_output(['wc','-l',args.iipReqs]).partition(' ')[0])
     totalTime = t1-t0
@@ -147,10 +147,8 @@ def parseargs():
     parser.add_argument ( "-v", "--verbosity", action="count",default=0,help="increase output verbosity" )
     parser.add_argument ( "-t", "--test", type=str, help="Benchmark script", default=QUIP_BENCHMARK+'/run.sh')
     parser.add_argument ( "-i", "--iipReqs", type=str, help="iipsrv requests file", default=QUIP_BENCHMARK+'/iipReqs.parsed')
-    parser.add_argument ( "-r", "--testRow", type=str, help="Config table row to test", default=QUIP_BENCHMARK+'/test_row.txt')
     parser.add_argument ( "-c", "--configTable", type=str, help="Configuration table", default=QUIP_BENCHMARK+'/configs.json')
     parser.add_argument ( "-s", "--iipsrvConf", type=str, help="iipsrv config file", default=QUIP_DISTRO+'/ViewerDockerContainer/apache2-iipsrv-fcgid.conf')
-    parser.add_argument ( "-p", "--ip", type=str, help="IP address of the apache2 server", default='104.199.116.255')
     parser.add_argument ( "-b", "--bucket", type=str, help="GCS bucket on which to mount gcsfuse", default='svs_images')
     return(parser.parse_args())
 

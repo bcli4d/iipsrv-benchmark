@@ -1,7 +1,7 @@
 #! /bin/bash
 set -x
 
-MOUNT_AT=/home/bcliffor/Projects/quip_distro/data/img/isb-cgc-open
+MOUNT_AT=/home/bcliffor/projects/quip_distro/data/img/isb-cgc-open
 if grep -q $MOUNT_AT /etc/mtab; then
    fusermount -u $MOUNT_AT
 fi
