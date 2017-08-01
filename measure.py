@@ -73,13 +73,13 @@ def configureThisSet(args,config):
     mod_apache_iipsrv(args, 'FcgidMaxProcessesPerClass ', config["threads"])
 
 #Remove all containers (assume the only containers are for quip
-def stopQuip():
+def stopQuipViewer():
     containers = subprocess.check_output(['docker','ps','-aq']).split('\n')[0:-1]
     for container in containers:
         subprocess.check_output(['docker','rm', '-f', container])
 #     subprocess.check_output(['docker','rm', '-f', 'quip-viewer'])
 
-def startQuip():
+def startQuipViewer():
 #    subprocess.check_output([QUIP_DISTRO+'/vrun_containers.sh', QUIP_DISTRO+'/data', QUIP_DISTRO])
     subprocess.check_output([QUIP_DISTRO+'/vrun_viewer.sh', QUIP_DISTRO+'/data', QUIP_DISTRO])
 
@@ -89,17 +89,20 @@ def remount_gcsfuse(args):
     
 #Measure performance for one parameter configuration
 def one_config(args, row, config):
-    #Stop quip. By stopping and restarting we flush any quip maintained caches.
-    stopQuip()
+    #Stop quip viewwe. By stopping and restarting we flush any quip maintained caches.
+    if not args.noRestartViewer:
+        stopQuipViewer()
 
     #Implement the configuration for this test
     configureThisSet(args,config)
 
     #Need to ensure that gcsfuse caches are flushed. This doesn't work if done while quip is running
-    remount_gcsfuse(args)
+    if not args.noRestartGcsfuse:
+        remount_gcsfuse(args)
 
-    #Now start quip again
-    startQuip()
+    #Now start quip viewer again
+    if not args.noRestartViewer:
+        startQuipViewer()
 
     if args.verbosity >=1:
         print("Config {}: {}".format(row,config))
@@ -150,8 +153,12 @@ def parseargs():
     parser.add_argument ( "-c", "--configTable", type=str, help="Configuration table", default=QUIP_BENCHMARK+'/configs.json')
     parser.add_argument ( "-s", "--iipsrvConf", type=str, help="iipsrv config file", default=QUIP_DISTRO+'/ViewerDockerContainer/apache2-iipsrv-fcgid.conf')
     parser.add_argument ( "-b", "--bucket", type=str, help="GCS bucket on which to mount gcsfuse", default='svs_images')
+    parser.add_argument ( "-d", "--noRestartViewer", action='store_true', help="Restart viewer container between configs", default=False)
+    parser.add_argument ( "-g", "--noRestartGcsfuse", action='store_true', help="Restart gcsfuse between configs", default=False)
+    
     return(parser.parse_args())
 
 if __name__ == '__main__':
     args=parseargs()
+    print(args)
     all_configs(args)

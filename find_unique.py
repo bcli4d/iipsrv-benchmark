@@ -26,15 +26,15 @@ def is_unique(uniques,req):
 def find(args):
     #Load all the defined configurations
     reqs = loadReqTable(args)
-    uniques = set()
+    uniques = []
     found=0
     for req in reqs:
         if req not in uniques:
-            uniques.add(req)
+            uniques.append(req)
         found+=1
         if found == args.find:
             break
-    
+#    uniques.sort()
     flushUniqueReqs(args,uniques)
     exit
 

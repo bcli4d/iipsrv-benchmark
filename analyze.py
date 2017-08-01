@@ -37,8 +37,8 @@ def all_configs(args):
                 print(i,r)
         sum = times = 0
         for time in configs[row]["avgTime"]:
-            if time <> max(configs[row]["avgTime"]) :
-                if time  <> min(configs[row]["avgTime"]) :
+            if not args.noMax or time <> max(configs[row]["avgTime"]) :
+                if not args.noMin or time <> min(configs[row]["avgTime"]) :
                     sum += time
                     times +=1
         configs[row]['avgAvgTime'] = sum/times
@@ -70,6 +70,8 @@ def parseargs():
     parser = argparse.ArgumentParser(description="Build svs image metadata table")
     parser.add_argument ( "-v", "--verbosity", action="count",default=0,help="increase output verbosity" )
     parser.add_argument ( "-c", "--configTable", type=str, help="Configuration table", default=QUIP_BENCHMARK+'/configs.json')
+    parser.add_argument ( "-x", "--noMax", action='store_true', help="Throw out the max avg")
+    parser.add_argument ( "-n", "--noMin", action='store_true', help="Throw out the min avg")
     return(parser.parse_args())
 
 if __name__ == '__main__':
